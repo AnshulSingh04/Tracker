@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🥛 Monthly Milk Tracker</title>
+    <title>🥛 Dual Source Milk Tracker</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Use Inter font -->
@@ -26,52 +26,63 @@
 <body class="p-4 md:p-8 min-h-screen">
 
     <!-- Main Container -->
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-6xl mx-auto">
         <h1 class="text-4xl font-extrabold text-gray-800 mb-6 flex items-center">
             <svg class="w-8 h-8 mr-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 14a6 6 0 110-12 6 6 0 010 12zm-1-8a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zM9 11a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1z" clip-rule="evenodd" fill-rule="evenodd"></path>
                 <path d="M10 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1z" transform="rotate(-45 10 10)"></path>
             </svg>
-            Monthly Milk Tracker
+            Monthly Milk Tracker (Dual Source)
         </h1>
 
-        <!-- User/Status Section - Now indicates Local Storage Mode -->
+        <!-- User/Status Section -->
         <div id="status-card" class="mb-6 p-4 bg-green-50 border-l-4 border-green-600 rounded-lg shadow-sm">
             <p class="text-sm font-medium text-green-800">
-                <span id="auth-status" class="font-bold">Initializing Local Storage...</span>
+                <span id="auth-status" class="font-bold">Local Storage Mode: Connected & Ready</span>
             </p>
             <p class="text-xs text-green-700 mt-1">User ID: <span id="user-id">Data saved locally on this browser.</span></p>
         </div>
 
         <!-- Price Setup Modal (Hidden by default) -->
         <div id="price-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 z-50 hidden items-center justify-center p-4">
-            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Set Monthly Milk Price (₹)</h2>
-                <p class="text-sm text-gray-600 mb-4">Please enter the price per liter of milk in **Rupees (₹)** for the current month (<span id="current-month-display-modal" class="font-semibold"></span>).</p>
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Set Monthly Milk Prices (₹)</h2>
+                <p class="text-sm text-gray-600 mb-4">Please enter the price per liter for both sources for the current month (<span id="current-month-display-modal" class="font-semibold"></span>).</p>
                 
-                <input type="number" step="0.01" id="milk-price-input" placeholder="Price per Liter (e.g., 65.50)"
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 mb-4">
-                
+                <div class="space-y-4 mb-4">
+                    <input type="number" step="0.01" id="milk-price-input-a" placeholder="Price per Liter - Source 1 (e.g., 60.00)"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    <input type="number" step="0.01" id="milk-price-input-b" placeholder="Price per Liter - Source 2 (e.g., 65.50)"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
                 <button id="save-price-button"
                         class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-150 shadow-md">
-                    Save Price
+                    Save Prices
                 </button>
-                <p id="price-error" class="text-red-500 text-xs mt-2 hidden">Please enter a valid price.</p>
+                <p id="price-error" class="text-red-500 text-xs mt-2 hidden text-center">Please enter valid prices for both sources.</p>
             </div>
         </div>
 
         <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
             <!-- 1. Daily Entry Card (Col Span 1) -->
             <div class="lg:col-span-1 p-6 summary-card rounded-xl shadow-lg h-fit">
-                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Daily Milk Log</h2>
+                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Daily Log</h2>
                 <p class="text-sm text-gray-500 mb-6">Today is <span id="current-date-display" class="font-medium text-gray-700"></span></p>
 
                 <form id="daily-entry-form" class="space-y-4">
+                    <!-- Source 1 Input -->
                     <div>
-                        <label for="milk-liters" class="block text-sm font-medium text-gray-700 mb-1">Milk Taken Today (Liters)</label>
-                        <input type="number" step="0.1" min="0" id="milk-liters" placeholder="e.g., 1.5" required
+                        <label for="milk-liters-a" class="block text-sm font-medium text-gray-700 mb-1">Source 1 Milk (Liters)</label>
+                        <input type="number" step="0.1" min="0" id="milk-liters-a" placeholder="e.g., 1.0" value="0.0"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <!-- Source 2 Input -->
+                    <div>
+                        <label for="milk-liters-b" class="block text-sm font-medium text-gray-700 mb-1">Source 2 Milk (Liters)</label>
+                        <input type="number" step="0.1" min="0" id="milk-liters-b" placeholder="e.g., 0.5" value="0.0"
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     
@@ -84,31 +95,52 @@
 
                 <div class="mt-6 border-t pt-4">
                     <p class="text-sm font-medium text-gray-700">
-                        Current Monthly Price: <span id="monthly-price" class="font-bold text-lg text-green-600">--</span> per Liter
+                        Price Source 1: <span id="monthly-price-a" class="font-bold text-md text-green-600">--</span> /L
                     </p>
-                    <button id="change-price-button" class="mt-2 text-xs text-gray-500 hover:text-blue-500 underline">
-                        Change Price for <span id="current-month-display-button"></span>
+                    <p class="text-sm font-medium text-gray-700 mt-1">
+                        Price Source 2: <span id="monthly-price-b" class="font-bold text-md text-green-600">--</span> /L
+                    </p>
+                    <button id="change-price-button" class="mt-3 text-xs text-gray-500 hover:text-blue-500 underline">
+                        Change Prices for <span id="current-month-display-button"></span>
                     </button>
                 </div>
             </div>
 
-            <!-- 2. Monthly Summary Card (Col Span 2) -->
-            <div class="lg:col-span-2 p-6 summary-card rounded-xl shadow-lg">
-                <h2 class="text-2xl font-semibold text-gray-700 mb-4">
+            <!-- 2. Monthly Summary Cards (Col Span 3) -->
+            <div class="lg:col-span-3 p-6 summary-card rounded-xl shadow-lg">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-6">
                     Monthly Summary for <span id="current-month-display" class="text-green-600">...</span>
                 </h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Total Liters Card -->
-                    <div class="p-5 bg-indigo-50 rounded-lg border border-indigo-200">
-                        <p class="text-sm font-medium text-indigo-700">Total Milk Consumed</p>
-                        <p id="total-liters" class="text-4xl font-extrabold text-indigo-900 mt-1">0.00 L</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <!-- Source 1 Totals -->
+                    <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <p class="text-sm font-medium text-blue-700">Source 1 Liters</p>
+                        <p id="total-liters-a" class="text-2xl font-extrabold text-blue-900 mt-1">0.00 L</p>
+                    </div>
+                    <div class="p-4 bg-blue-100 rounded-lg border border-blue-300">
+                        <p class="text-sm font-medium text-blue-800">Source 1 Cost</p>
+                        <p id="total-cost-a" class="text-2xl font-extrabold text-blue-900 mt-1">--</p>
                     </div>
 
-                    <!-- Total Cost Card -->
-                    <div class="p-5 bg-teal-50 rounded-lg border border-teal-200">
-                        <p class="text-sm font-medium text-teal-700">Total Monthly Cost</p>
-                        <p id="total-cost" class="text-4xl font-extrabold text-teal-900 mt-1">--</p>
+                    <!-- Source 2 Totals -->
+                    <div class="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                        <p class="text-sm font-medium text-purple-700">Source 2 Liters</p>
+                        <p id="total-liters-b" class="text-2xl font-extrabold text-purple-900 mt-1">0.00 L</p>
+                    </div>
+                    <div class="p-4 bg-purple-100 rounded-lg border border-purple-300">
+                        <p class="text-sm font-medium text-purple-800">Source 2 Cost</p>
+                        <p id="total-cost-b" class="text-2xl font-extrabold text-purple-900 mt-1">--</p>
+                    </div>
+
+                    <!-- Grand Totals -->
+                    <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+                        <p class="text-sm font-medium text-green-700">GRAND TOTAL LITERS</p>
+                        <p id="grand-total-liters" class="text-2xl font-extrabold text-green-900 mt-1">0.00 L</p>
+                    </div>
+                    <div class="p-4 bg-green-100 rounded-lg border border-green-300">
+                        <p class="text-sm font-medium text-green-800">GRAND TOTAL COST</p>
+                        <p id="grand-total-cost" class="text-2xl font-extrabold text-green-900 mt-1">--</p>
                     </div>
                 </div>
 
@@ -119,15 +151,18 @@
                         <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Liters</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost (₹)</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-blue-600 uppercase tracking-wider">Liters 1</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-blue-600 uppercase tracking-wider">Cost 1 (₹)</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">Liters 2</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">Cost 2 (₹)</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-green-600 uppercase tracking-wider">Daily Total (₹)</th>
                                 </tr>
                             </thead>
                             <tbody id="daily-breakdown-body" class="bg-white divide-y divide-gray-200">
                                 <!-- Entries will be inserted here -->
                                 <tr>
-                                    <td colspan="3" class="px-6 py-4 text-sm text-gray-500 text-center">Loading entries...</td>
+                                    <td colspan="6" class="px-6 py-4 text-sm text-gray-500 text-center">Loading entries...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -154,24 +189,35 @@
 
         // --- DOM Elements ---
         const authStatusEl = document.getElementById('auth-status');
-        const userIdEl = document.getElementById('user-id');
         const statusCardEl = document.getElementById('status-card'); 
         const currentMonthDisplayEl = document.getElementById('current-month-display');
         const currentMonthDisplayButtonEl = document.getElementById('current-month-display-button');
         const currentMonthDisplayModalEl = document.getElementById('current-month-display-modal');
         const currentDateDisplayEl = document.getElementById('current-date-display');
-        const monthlyPriceEl = document.getElementById('monthly-price');
-        const totalLitersEl = document.getElementById('total-liters');
-        const totalCostEl = document.getElementById('total-cost');
+        
+        // Price displays
+        const monthlyPriceAEl = document.getElementById('monthly-price-a');
+        const monthlyPriceBEl = document.getElementById('monthly-price-b');
+        
+        // Totals displays
+        const totalLitersAEl = document.getElementById('total-liters-a');
+        const totalCostAEl = document.getElementById('total-cost-a');
+        const totalLitersBEl = document.getElementById('total-liters-b');
+        const totalCostBEl = document.getElementById('total-cost-b');
+        const grandTotalLitersEl = document.getElementById('grand-total-liters');
+        const grandTotalCostEl = document.getElementById('grand-total-cost');
+        
         const dailyBreakdownBodyEl = document.getElementById('daily-breakdown-body');
         const dailyEntryForm = document.getElementById('daily-entry-form');
-        const milkLitersInput = document.getElementById('milk-liters');
+        const milkLitersInputA = document.getElementById('milk-liters-a');
+        const milkLitersInputB = document.getElementById('milk-liters-b');
         const logMilkButton = document.getElementById('log-milk-button');
         const dailyStatusEl = document.getElementById('daily-status');
         
         // Price Modal Elements
         const priceModal = document.getElementById('price-modal');
-        const milkPriceInput = document.getElementById('milk-price-input');
+        const milkPriceInputA = document.getElementById('milk-price-input-a');
+        const milkPriceInputB = document.getElementById('milk-price-input-b');
         const savePriceButton = document.getElementById('save-price-button');
         const changePriceButton = document.getElementById('change-price-button');
         const priceErrorEl = document.getElementById('price-error');
@@ -205,8 +251,6 @@
 
         /**
          * Loads the current month's data from localStorage.
-         * Data structure is stored monthly, e.g., 'milkTracker:2025-10'
-         * @returns {Object} The parsed month data or an empty object.
          */
         function loadMonthDataFromLocal() {
             const rawData = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -221,8 +265,6 @@
 
         /**
          * Saves the current month's data to localStorage.
-         * @param {Object} data - The month data object.
-         * @returns {boolean} True if save was successful.
          */
         function saveMonthDataToLocal(data) {
             try {
@@ -231,7 +273,6 @@
                 updateSummary(data);
                 return true;
             } catch (e) {
-                // This usually happens when local storage is full or disabled
                 console.error("Error saving to local storage:", e);
                 displayStatus("Local storage failed. Data may be lost on refresh.", true);
                 return false;
@@ -239,53 +280,78 @@
         }
 
         /**
-         * Calculates and updates the summary statistics in the UI.
-         * @param {Object} docData - The current month's document data.
+         * Calculates and updates the summary statistics in the UI for both sources.
          */
         function updateSummary(docData) {
-            const price = docData?.pricePerLiter || 0;
+            const priceA = docData?.pricePerLiterA || 0;
+            const priceB = docData?.pricePerLiterB || 0;
             const dailyEntries = docData?.dailyEntries || {};
             
-            // --- Currency Display (₹) ---
-            monthlyPriceEl.textContent = price > 0 ? `₹${price.toFixed(2)}` : 'Not Set';
+            // --- Price Display (₹) ---
+            monthlyPriceAEl.textContent = priceA > 0 ? `₹${priceA.toFixed(2)}` : 'Not Set';
+            monthlyPriceBEl.textContent = priceB > 0 ? `₹${priceB.toFixed(2)}` : 'Not Set';
             
+            const isPriceSet = priceA > 0 && priceB > 0;
+
             // Enable/Disable Log Button
-            logMilkButton.disabled = price <= 0;
-            logMilkButton.className = price > 0 
+            logMilkButton.disabled = !isPriceSet;
+            logMilkButton.className = isPriceSet 
                 ? 'w-full bg-green-600 text-white font-semibold py-2 rounded-lg hover:bg-green-700 transition duration-150 shadow-md'
                 : 'w-full bg-gray-400 text-white font-semibold py-2 rounded-lg cursor-not-allowed opacity-50 shadow-md';
             
             // 1. Calculate Totals
-            let totalLiters = 0;
+            let totalLitersA = 0;
+            let totalLitersB = 0;
+
             for (const day in dailyEntries) {
-                totalLiters += parseFloat(dailyEntries[day]) || 0;
+                const entry = dailyEntries[day];
+                totalLitersA += parseFloat(entry.litersA) || 0;
+                totalLitersB += parseFloat(entry.litersB) || 0;
             }
-            const totalCost = totalLiters * price;
+            
+            const totalCostA = totalLitersA * priceA;
+            const totalCostB = totalLitersB * priceB;
+            
+            const grandTotalLiters = totalLitersA + totalLitersB;
+            const grandTotalCost = totalCostA + totalCostB;
 
             // 2. Update Summary UI
-            totalLitersEl.textContent = `${totalLiters.toFixed(2)} L`;
-            totalCostEl.textContent = price > 0 ? `₹${totalCost.toFixed(2)}` : '--';
+            totalLitersAEl.textContent = `${totalLitersA.toFixed(2)} L`;
+            totalCostAEl.textContent = isPriceSet ? `₹${totalCostA.toFixed(2)}` : '--';
+            
+            totalLitersBEl.textContent = `${totalLitersB.toFixed(2)} L`;
+            totalCostBEl.textContent = isPriceSet ? `₹${totalCostB.toFixed(2)}` : '--';
+            
+            grandTotalLitersEl.textContent = `${grandTotalLiters.toFixed(2)} L`;
+            grandTotalCostEl.textContent = isPriceSet ? `₹${grandTotalCost.toFixed(2)}` : '--';
+
 
             // 3. Update Breakdown Table
             dailyBreakdownBodyEl.innerHTML = '';
-            // Sort keys numerically to display days in order
             const sortedDays = Object.keys(dailyEntries).sort((a, b) => parseInt(a) - parseInt(b));
 
             if (sortedDays.length === 0) {
-                dailyBreakdownBodyEl.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-sm text-gray-500 text-center">No entries yet for ${monthName}.</td></tr>`;
+                dailyBreakdownBodyEl.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-sm text-gray-500 text-center">No entries yet for ${monthName}.</td></tr>`;
             } else {
                 sortedDays.forEach(day => {
-                    const liters = parseFloat(dailyEntries[day]);
-                    const cost = liters * price;
-                    const row = document.createElement('tr');
+                    const entry = dailyEntries[day];
+                    const litersA = parseFloat(entry.litersA) || 0;
+                    const litersB = parseFloat(entry.litersB) || 0;
                     
-                    // Create date object for display (since only day is saved)
+                    const costA = litersA * priceA;
+                    const costB = litersB * priceB;
+                    const dailyTotalCost = costA + costB;
+
+                    const row = document.createElement('tr');
                     const entryDate = new Date(today.getFullYear(), today.getMonth(), parseInt(day));
 
                     row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${entryDate.toLocaleDateString('default', { day: 'numeric', month: 'short' })}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${liters.toFixed(2)} L</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${price > 0 ? `₹${cost.toFixed(2)}` : '--'}</td>
+                        <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${entryDate.toLocaleDateString('default', { day: 'numeric', month: 'short' })}</td>
+                        <td class="px-3 py-4 whitespace-nowrap text-sm text-blue-800">${litersA.toFixed(2)} L</td>
+                        <td class="px-3 py-4 whitespace-nowrap text-sm text-blue-800">${isPriceSet ? `₹${costA.toFixed(2)}` : '--'}</td>
+                        <td class="px-3 py-4 whitespace-nowrap text-sm text-purple-800">${litersB.toFixed(2)} L</td>
+                        <td class="px-3 py-4 whitespace-nowrap text-sm text-purple-800">${isPriceSet ? `₹${costB.toFixed(2)}` : '--'}</td>
+                        <td class="px-3 py-4 whitespace-nowrap text-sm font-semibold text-green-800">${isPriceSet ? `₹${dailyTotalCost.toFixed(2)}` : '--'}</td>
                     `;
                     // Highlight today's entry
                     if (day === dayOfMonth) {
@@ -294,14 +360,21 @@
                     dailyBreakdownBodyEl.appendChild(row);
                 });
             }
+
+            // Show price modal if price is not set
+            if (!isPriceSet) {
+                showPriceModal();
+            } else {
+                hidePriceModal();
+            }
         }
 
         /**
          * Saves the daily milk entry to localStorage.
          */
-        async function saveDailyEntry(liters) {
-            if (!currentMonthData || !currentMonthData.pricePerLiter) {
-                dailyStatusEl.textContent = 'Error: Monthly price must be set first.';
+        async function saveDailyEntry(litersA, litersB) {
+            if (!currentMonthData.pricePerLiterA || !currentMonthData.pricePerLiterB) {
+                dailyStatusEl.textContent = 'Error: Monthly prices for both sources must be set first.';
                 dailyStatusEl.classList.add('text-red-600');
                 return;
             }
@@ -312,12 +385,17 @@
             // Create new data object to save
             const newData = { ...currentMonthData };
             newData.dailyEntries = newData.dailyEntries || {};
-            newData.dailyEntries[dayOfMonth] = liters; // Store the new/updated entry
+            
+            newData.dailyEntries[dayOfMonth] = { 
+                litersA: litersA, 
+                litersB: litersB 
+            }; 
 
             if (saveMonthDataToLocal(newData)) {
-                dailyStatusEl.textContent = `Logged ${liters.toFixed(2)} L for today.`;
+                dailyStatusEl.textContent = `Logged ${litersA.toFixed(2)}L (S1) and ${litersB.toFixed(2)}L (S2) for today.`;
                 dailyStatusEl.classList.add('text-green-600');
-                milkLitersInput.value = ''; // Clear input after successful save
+                milkLitersInputA.value = '0.0';
+                milkLitersInputB.value = '0.0';
             } else {
                 dailyStatusEl.textContent = 'Failed to save entry locally.';
                 dailyStatusEl.classList.add('text-red-600');
@@ -327,14 +405,15 @@
         /**
          * Saves the monthly price to localStorage.
          */
-        async function saveMonthlyPrice(price) {
+        async function saveMonthlyPrice(priceA, priceB) {
             priceErrorEl.classList.add('hidden');
             savePriceButton.disabled = true;
             savePriceButton.textContent = 'Saving...';
 
             const newData = { 
                 ...currentMonthData, 
-                pricePerLiter: price, 
+                pricePerLiterA: priceA, 
+                pricePerLiterB: priceB, 
                 month: yearMonth,
                 dailyEntries: currentMonthData.dailyEntries || {}
             };
@@ -342,21 +421,22 @@
             if (saveMonthDataToLocal(newData)) {
                 hidePriceModal();
             } else {
-                priceErrorEl.textContent = 'Failed to save price locally. Please try again.';
+                priceErrorEl.textContent = 'Failed to save prices locally. Please try again.';
                 priceErrorEl.classList.remove('hidden');
             }
 
             savePriceButton.disabled = false;
-            savePriceButton.textContent = 'Save Price';
+            savePriceButton.textContent = 'Save Prices';
         }
 
         // --- UI/EVENT HANDLERS ---
         
-        function showPriceModal(currentPrice = null) {
+        function showPriceModal(priceA = null, priceB = null) {
             priceModal.classList.remove('hidden');
             priceModal.classList.add('flex');
-            milkPriceInput.value = currentPrice || '';
-            milkPriceInput.focus();
+            milkPriceInputA.value = priceA || '';
+            milkPriceInputB.value = priceB || '';
+            milkPriceInputA.focus();
         }
 
         function hidePriceModal() {
@@ -372,43 +452,47 @@
             
             displayStatus("Local Storage Mode: Connected & Ready", false);
 
-            if (!currentMonthData.pricePerLiter) {
-                showPriceModal();
+            if (!currentMonthData.pricePerLiterA || !currentMonthData.pricePerLiterB) {
+                showPriceModal(currentMonthData.pricePerLiterA, currentMonthData.pricePerLiterB);
             }
             updateSummary(currentMonthData);
         }
 
-        // 2. Form Submission Handler
+        // 1. Form Submission Handler
         dailyEntryForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const liters = parseFloat(milkLitersInput.value);
-
-            if (isNaN(liters) || liters <= 0) {
-                dailyStatusEl.textContent = 'Please enter a valid amount of milk in liters.';
+            const litersA = parseFloat(milkLitersInputA.value) || 0;
+            const litersB = parseFloat(milkLitersInputB.value) || 0;
+            
+            // Allow logging if at least one value is greater than zero
+            if (litersA <= 0 && litersB <= 0) {
+                dailyStatusEl.textContent = 'Please enter a valid amount of milk in liters for at least one source.';
                 dailyStatusEl.classList.add('text-red-600');
                 return;
             }
 
-            saveDailyEntry(liters);
+            saveDailyEntry(litersA, litersB);
         });
 
-        // 3. Price Submission Handler
+        // 2. Price Submission Handler
         savePriceButton.addEventListener('click', () => {
-            const price = parseFloat(milkPriceInput.value);
+            const priceA = parseFloat(milkPriceInputA.value);
+            const priceB = parseFloat(milkPriceInputB.value);
 
-            if (isNaN(price) || price <= 0) {
-                priceErrorEl.textContent = 'Please enter a positive price per liter.';
+            if (isNaN(priceA) || priceA <= 0 || isNaN(priceB) || priceB <= 0) {
+                priceErrorEl.textContent = 'Please enter a positive price for both Source 1 and Source 2.';
                 priceErrorEl.classList.remove('hidden');
                 return;
             }
             
-            saveMonthlyPrice(price);
+            saveMonthlyPrice(priceA, priceB);
         });
 
-        // 4. Change Price Button Handler
+        // 3. Change Price Button Handler
         changePriceButton.addEventListener('click', () => {
-            const currentPrice = currentMonthData ? currentMonthData.pricePerLiter : null;
-            showPriceModal(currentPrice);
+            const currentPriceA = currentMonthData ? currentMonthData.pricePerLiterA : null;
+            const currentPriceB = currentMonthData ? currentMonthData.pricePerLiterB : null;
+            showPriceModal(currentPriceA, currentPriceB);
         });
 
         // Start the application
